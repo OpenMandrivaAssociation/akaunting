@@ -1,0 +1,25 @@
+Akaunting is installed under /srv/www/akaunting. The web server
+document root is that directory, not public/. Configuration is
+/etc/sysconfig/akaunting, symlinked to /srv/www/akaunting/.env.
+
+Akaunting 3.2.4 is Business Source License 1.1. Production use is
+limited to one company, two users, and one thousand invoices, and it
+may not be offered as an accounting service to third parties. Four
+years after publication the same code becomes GPLv3.
+
+1. Create a MariaDB database:
+
+   mariadb -e "CREATE DATABASE akaunting CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   mariadb -e "CREATE USER akaunting@localhost IDENTIFIED BY 'a-password';"
+   mariadb -e "GRANT ALL ON akaunting.* TO akaunting@localhost;"
+   systemctl enable --now mariadb
+
+2. Put the same password and a real APP_URL into /etc/sysconfig/akaunting.
+
+3. Enable the site:
+
+   ln -s ../sites-available/akaunting.conf /etc/nginx/sites-enabled/akaunting.conf
+   systemctl enable --now php-fpm@akaunting nginx akaunting-scheduler.timer
+
+4. Open the site. The installer creates the company and the admin user.
+   Leave APP_INSTALLED=false until that wizard finishes.
